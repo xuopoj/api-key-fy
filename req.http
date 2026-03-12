@@ -1,0 +1,126 @@
+@base = http://localhost:8800
+@adminApi = {{base}}/admin/api
+
+### Login
+# @name login
+POST {{adminApi}}/auth/login
+Content-Type: application/json
+
+{
+  "iam_username": "hw_yangbing",
+  "iam_password": "Huawei@026",
+  "iam_domain": "nggs"
+}
+
+### Me (check session)
+GET {{adminApi}}/auth/me
+
+### Logout
+POST {{adminApi}}/auth/logout
+
+###
+
+### List credentials
+GET {{adminApi}}/credentials
+
+### Create credential
+POST {{adminApi}}/credentials
+Content-Type: application/json
+
+{
+  "name": "my-credential",
+  "is_shared": false,
+  "iam_username": "your-username",
+  "iam_password": "your-password",
+  "iam_domain": "your-domain",
+  "iam_project": "ap-southeast-1",
+  "iam_region": "ap-southeast-1",
+  "iam_endpoint": null
+}
+
+###
+
+### List apps
+GET {{adminApi}}/apps
+
+### Create app (http_path)
+POST {{adminApi}}/apps
+Content-Type: application/json
+
+{
+  "name": "my-model",
+  "type": "http_path",
+  "slug": "my-model",
+  "credential_id": "00000000-0000-0000-0000-000000000000",
+  "base_url": "https://model.inference.example.com",
+  "upstream_base_path": "/v1",
+  "strip_prefix": true
+}
+
+###
+
+### List API keys
+GET {{adminApi}}/keys
+
+### Create API key
+POST {{adminApi}}/keys
+Content-Type: application/json
+
+{
+  "name": "test-key",
+  "credential_id": "00000000-0000-0000-0000-000000000000",
+  "rate_limit_rpm": 60,
+  "logging_enabled": true,
+  "app_ids": ["00000000-0000-0000-0000-000000000000"]
+}
+
+### Revoke API key
+DELETE {{adminApi}}/keys/00000000-0000-0000-0000-000000000000
+
+###
+
+### List logs
+GET {{adminApi}}/logs
+
+### List logs (filtered)
+GET {{adminApi}}/logs?limit=20&offset=0
+
+###
+
+### Proxy request (http_path app)
+# Replace akfy_... with an actual API key
+POST {{base}}/my-model/infer
+Authorization: Bearer akfy_0000000000000000000000000000000000000000
+Content-Type: application/json
+
+{
+  "prompt": "hello"
+}
+
+
+### Modelarts
+POST http://localhost:8800/modelarts/v1/infers/1fd7bf03-5a71-4e14-a038-7bee35405e67/v1/chat/completions
+Authorization: Bearer akfy_ad16f87412f9b344071f0402363a434c6ab3f1c4
+Content-Type: application/json
+
+{
+  "stream": true,
+  "messages": [{
+    "role": "user",
+    "content": "hi"
+  }]
+}
+
+
+### Modelarts
+POST http://nisco-arbitrage.online:8800/modelarts/v1/infers/1fd7bf03-5a71-4e14-a038-7bee35405e67/v1/chat/completions
+Authorization: Bearer akfy_c774fdf6a2045e5c36cd6698c6f308deb48cd737
+Content-Type: application/json
+
+{
+  "stream": true,
+  "messages": [{
+    "role": "user",
+    "content": "hi"
+  }]
+}

@@ -1,0 +1,6 @@
+.env
+proxy/.env
+proxy/target/
+proxy/static
+admin/node_modules/
+admin/dist/

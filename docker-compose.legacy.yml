@@ -1,0 +1,36 @@
+version: "2.4"
+
+services:
+  db:
+    image: swr.cn-global-1.cloud.nisco.cn/llmspace/postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: apikeyfy
+      POSTGRES_USER: apikeyfy
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U apikeyfy"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  proxy:
+    image: swr.cn-global-1.cloud.nisco.cn/llmspace/api-key-fy:latest
+    ports:
+      - "8800:8800"
+      - "8801-8999:8801-8999"
+    environment:
+      DATABASE_URL: postgres://apikeyfy:${POSTGRES_PASSWORD}@db/apikeyfy
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+      IAM_ENDPOINT: ${IAM_ENDPOINT}
+      PORT: 8800
+      RUST_LOG: info
+    depends_on:
+      db:
+        condition: service_healthy
+
+volumes:
+  pgdata:
